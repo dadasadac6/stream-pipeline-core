@@ -1,0 +1,30 @@
+name: Stream Pipeline Pulse
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 */6 * * *'
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Pipeline Evaluator
+        run: |
+          mkdir -p metrics
+          node src/pipeline.js
+
+      - name: Upload Telemetry Metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-metrics
+          path: metrics/
+          retention-days: 7
